@@ -47,10 +47,21 @@ contract Wallet {
         require (transferRequests[_id].hasBeenSent==false);
         approvals[msg.sender][_id] = true;
         transferRequests[_id].approvals++;
+
+        if(transferRequests[_id].approvals>=limit){
+            transferRequests[_id].hasBeenSent==true;
+            transferRequests[_id].receiver.transfer(transferRequests[_id].amount);
+        }
     }
     
     //Should return all transfer requests
     function getTransferRequests() public view returns (Transfer[] memory){
+        return transferRequests;
+    }
+    
+        function getBalance () public returns (uint) {
+        return address(this).balance;
+
     }
     
     
