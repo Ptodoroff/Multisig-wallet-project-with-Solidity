@@ -1,4 +1,4 @@
-pragma solidity 0.7.5;
+pragma solidity ^0.8.0;
 pragma abicoder v2;
 
 contract Wallet {
@@ -18,9 +18,19 @@ contract Wallet {
     mapping(address => mapping(uint => bool)) approvals;
     
     modifier onlyOwners(){
-        owners.push(msg.sender);
+         bool owner=false;
+         for (uint i; i<owners.length;++i){
+            if (owners[i]==msg.sender){
+                owner=true;
+            }
+         }
+         require (owner==true);
+         _;
+        
+        }
 
-    }
+
+    
     constructor(address[] memory _owners, uint _limit) {
         owners=_owners;
         limit=_limit;
@@ -33,6 +43,10 @@ contract Wallet {
         
     }
     function approve(uint _id) public onlyOwners {
+        require (approvals[msg.sender][_id]==false);
+        require (transferRequests[_id].hasBeenSent==false);
+        approvals[msg.sender][_id] = true;
+        transferRequests[_id].approvals++;
     }
     
     //Should return all transfer requests
